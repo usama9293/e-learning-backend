@@ -19,12 +19,25 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Mathsmastery Institute API")
 # add_pagination(app)
 # CORS setup
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://e-learning-bfqx.vercel.app",
+    "https://e-learning-frontend.vercel.app",
+    "https://e-learning-backend-7-57nd.onrender.com"
+]
+
+# Add any additional origins from environment variable
+if os.getenv("BACKEND_CORS_ORIGINS"):
+    origins.extend(os.getenv("BACKEND_CORS_ORIGINS").split(","))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", os.getenv("BACKEND_CORS_ORIGINS", "").split(",")],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 app.include_router(api_router, prefix="/api/v1")

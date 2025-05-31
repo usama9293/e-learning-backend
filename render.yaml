@@ -18,7 +18,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: BACKEND_CORS_ORIGINS
-        value: https://your-frontend-url.com
+        value: https://e-learning-bfqx.vercel.app,https://e-learning-frontend.vercel.app
       - key: CARGO_HOME
         value: /opt/render/project/src/.cargo
       - key: RUSTUP_HOME
