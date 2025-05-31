@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.api_v1.api import api_router
 from app.core.security import get_password_hash
-
+import os
 from app.db.base import Base
 from app.db.session import engine
 from fastapi_cache import FastAPICache
@@ -18,10 +18,10 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Mathsmastery Institute API")
 # add_pagination(app)
-# CORS setup (allow all for now, restrict in production)
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000","http://127.0.0.1:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", os.getenv("BACKEND_CORS_ORIGINS", "").split(",")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -70,8 +70,16 @@ async def startup():
     
     db.add(settings)
     db.commit()
-    redis = aioredis.from_url("redis://localhost", encoding="utf8", decode_responses=True)
+    
+    # Get Redis URL from environment variable or use default
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+    redis = aioredis.from_url(redis_url, encoding="utf8", decode_responses=True)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 #cd e-learning-backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000
 # uvicorn main:app --reload --host 0.0.0.0 --port 8000

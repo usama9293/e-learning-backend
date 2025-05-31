@@ -23,3 +23,8 @@ services:
         value: /opt/render/project/src/.cargo
       - key: RUSTUP_HOME
         value: /opt/render/project/src/.rustup
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: e-learning-redis
+          property: connectionString
